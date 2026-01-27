@@ -1,0 +1,28 @@
+# Core scraping and automation
+selenium==4.15.0
+webdriver-manager==4.0.1
+beautifulsoup4==4.12.2
+requests==2.31.0
+
+# Async HTTP and WebSocket support
+aiohttp==3.8.6
+websockets==11.0.3
+
+# Image processing and utilities
+Pillow==10.0.1
+lxml==4.9.3
+
+# User agent and network utilities
+fake-useragent==1.4.0
+urllib3==2.0.7
+
+# Configuration and data handling
+python-dotenv==1.0.0
+pydantic==2.4.2
+
+# Progress tracking and data analysis
+tqdm==4.66.1
+pandas==2.1.2
+numpy==1.25.2
+
+# Note: asyncio is built into Python 3.7+, no separate package needed

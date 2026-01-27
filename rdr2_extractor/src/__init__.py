@@ -1,0 +1,1 @@
+# RDR2 Map Data Extractor

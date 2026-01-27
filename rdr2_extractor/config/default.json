@@ -1,0 +1,64 @@
+{
+  "target": {
+    "url": "https://rdr2map.com",
+    "wait_time": 10,
+    "max_retries": 3
+  },
+  "browser": {
+    "headless": true,
+    "stealth_mode": true,
+    "interactions": [
+      "zoom_in",
+      "zoom_out",
+      "pan_left",
+      "pan_right",
+      "pan_up",
+      "pan_down"
+    ],
+    "window_size": {
+      "width": 1920,
+      "height": 1080
+    },
+    "user_agent": null
+  },
+  "download": {
+    "rate_limit": 0.5,
+    "max_concurrent": 5,
+    "max_tiles": 5000,
+    "timeout": 30,
+    "retry_attempts": 3,
+    "respect_robots_txt": true
+  },
+  "tiles": {
+    "source": "mapgenie.io",
+    "base_url": "https://tiles.mapgenie.io/games/rdr2/world/atlas-dark-v1",
+    "format": "jpg",
+    "zoom_levels": [0, 1, 2, 3, 4, 5, 6],
+    "skip_existing": true
+  },
+  "output": {
+    "base_dir": "data",
+    "network_logs": "data/network_logs",
+    "window_data": "data/window_data",
+    "tiles": "data/tiles",
+    "markers": "data/markers"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "rdr2_extractor.log",
+    "max_size_mb": 50,
+    "backup_count": 5,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "analysis": {
+    "save_page_source": true,
+    "extract_images": true,
+    "analyze_css": false,
+    "deep_scan_window_objects": true
+  },
+  "api": {
+    "endpoints_file": "data/api_endpoints.json",
+    "save_responses": true,
+    "max_response_size_mb": 10
+  }
+}
