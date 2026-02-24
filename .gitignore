@@ -11,3 +11,7 @@ coverage/
 **/data/
 **/venv/
 **/__pycache__/
+
+# Proprietary map tiles — do not redistribute
+rdr2_extractor/data/tiles/
+rdr2_extractor/data/network_logs/
