@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2025 belcaik
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+IMPORTANT NOTICE REGARDING THIRD-PARTY ASSETS
+----------------------------------------------
+
+This repository contains ONLY the application source code, which is released
+under the MIT License above.
+
+This project does NOT include, distribute, or host any game assets from
+Red Dead Redemption 2 or any other Rockstar Games title. All game assets
+(map tiles, textures, icons, artwork, etc.) are the exclusive property of
+Rockstar Games / Take-Two Interactive Software, Inc. and are protected by
+copyright law.
+
+To use this application, you must supply your own locally-generated tile and
+marker data using the included extractor tool for personal, non-commercial
+use only. You are solely responsible for ensuring your use of any game assets
+complies with Rockstar Games' End User License Agreement and applicable law.
+
+The authors of this project make no claim of ownership over any Rockstar Games
+intellectual property and do not endorse any unauthorized use of such property.
