@@ -2,14 +2,44 @@
 
 ## GitHub publication follow-up (2026-09-21)
 
-The user authorized PR-to-main and GHCR publication in this session. Branch
-`feat/docker-homeserver` is published and [PR #2](https://github.com/belcaik/rdr2-map/pull/2)
-is open. The initial HTTPS push had no usable Git credential; the existing verified
-SSH GitHub identity successfully published the branch without changing the remote URL.
-The PR runs real Verification and Docker image jobs; its publish job is skipped by
-design. Merge and the main publication are gated on passing checks. Final run links,
-registry reference and anonymous-pull evidence are recorded on the PR when completed.
-Earlier no-publication statements below describe the preceding LAN-only checkpoint.
+The user authorized PR-to-main and GHCR publication in this session.
+[PR #2](https://github.com/belcaik/rdr2-map/pull/2) was published and merged as
+`7c45eb487b04fb7c4c6f0ea470474745719de0dc`. The merge occurred externally while
+checks were being observed; the agent did not issue that merge. The initial HTTPS
+push lacked a Git credential; the existing verified SSH GitHub identity published
+the branch without changing the remote URL. The follow-up documentation commit
+arrived after the merge and is carried by a separate documentation PR.
+
+Remote evidence, now distinct from the previous local-only checkpoint:
+
+- [PR verification](https://github.com/belcaik/rdr2-map/actions/runs/35664776425)
+  and [PR image build](https://github.com/belcaik/rdr2-map/actions/runs/35664776711)
+  passed; the PR's publish job was skipped as intended.
+- [Main verification](https://github.com/belcaik/rdr2-map/actions/runs/35664811789)
+  and [GHCR publication](https://github.com/belcaik/rdr2-map/actions/runs/35664811729)
+  passed. Both main runs have zero uploaded artifacts. Three existing npm caches
+  predate these runs; none was created by the new workflows.
+- [The package](https://github.com/users/belcaik/packages/container/package/rdr2-map)
+  is publicly visible. `docker --config <new-empty-directory> pull
+  ghcr.io/belcaik/rdr2-map:sha-7c45eb487b04fb7c4c6f0ea470474745719de0dc` succeeded
+  anonymously. The package REST query required read:packages, unavailable on the
+  local gh token; public page visibility and the anonymous pull establish access
+  independently. No new token or credentials were installed.
+- Published digest:
+  `sha256:bcf1f9c67b80c04ecb93cf387bfd69b41f9ecdac2966509cf151f1700bcabf60`.
+  Both the SHA tag and latest were published for AMD64. The image contains code,
+  not the dataset, media or progress database.
+- The ignored local environment now pins
+  `ghcr.io/belcaik/rdr2-map@sha256:bcf1f9c67b80c04ecb93cf387bfd69b41f9ecdac2966509cf151f1700bcabf60`.
+  Ran `SSH_HOST=baphomet DEPLOY_DIR=apps/rdr2-map CONTAINER_ENGINE=podman
+  ./scripts/deploy.sh` without archive or dataset. Podman pulled from GHCR,
+  recreated only RDR2, passed its actual healthcheck and retained active/enabled
+  user systemd. API progress matched its pre-update value; GTA remained healthy.
+
+Private command logs and pre-update configuration are ignored under
+`artifacts/publication/`. Earlier statements below record the preceding LAN-only
+checkpoint, rather than the current publication state. Future doc-only main pushes
+may advance latest; the server deliberately keeps this verified digest.
 
 ## Container and LAN delivery (2026-09-21)
 
