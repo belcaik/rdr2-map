@@ -1,5 +1,17 @@
 # Context handoff
 
+## PR preparation (2026-09-21)
+
+The user authorized commits and publication of a PR to `main`. Documentation fixes
+were committed separately as `3dbb878` and `249bef0`, using Conventional Commits and
+no coauthor trailers. Integrating `origin/main` at `a6f8e47` exposed an add/add README
+conflict: retained the current operational commands and preserved main's explicit
+MIT/source-only license pointer. No runtime files changed during integration.
+With `source rdr2_extractor/venv/bin/activate`, ran
+`CHROME_PATH=/home/belcaik/.cache/selenium/chrome/linux64/153.0.8010.52/chrome npm run check`
+after resolution: the entire sequence passed, including all six E2E tests.
+Earlier no-publication statements below describe their respective checkpoints.
+
 ## Photo inspection follow-up (2026-09-21)
 
 The reported missing photographs were a selection/import mismatch, not a failed

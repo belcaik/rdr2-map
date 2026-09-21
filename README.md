@@ -166,3 +166,6 @@ Public source coverage excludes premium locations; no access bypass is attempted
 Uninspected/failed discovery, pending/failed download and missing local files remain
 visible distinct states. This repository distributes code and synthetic fixtures,
 not downloaded game media, a deployed site or cloud services.
+
+The source code is licensed under [MIT](LICENSE). The license does not grant rights
+to third-party game assets; see [third-party notices](THIRD_PARTY_NOTICES.md).
