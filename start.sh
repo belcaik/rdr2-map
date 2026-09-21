@@ -1,49 +1,13 @@
-#!/bin/bash
-
-# RDR2 Interactive Map - Start Script
-# This script starts both the backend and frontend servers
-
-echo "========================================"
-echo "  RDR2 Interactive Map"
-echo "========================================"
-echo ""
-
-# Check if backend dependencies are installed
-if [ ! -d "backend/node_modules" ]; then
-    echo "Installing backend dependencies..."
-    cd backend && npm install && cd ..
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+if [[ ! -d backend/node_modules || ! -d frontend/node_modules ]]; then
+  echo 'Install dependencies first: npm ci && npm run install:all' >&2
+  exit 1
 fi
-
-# Check if frontend dependencies are installed
-if [ ! -d "frontend/node_modules" ]; then
-    echo "Installing frontend dependencies..."
-    cd frontend && npm install && cd ..
-fi
-
-# Check if database exists
-if [ ! -f "backend/data/rdr2.db" ]; then
-    echo "Database not found. Running import..."
-    cd backend && npm run import-data && cd ..
-fi
-
-echo ""
-echo "Starting servers..."
-echo "  Backend:  http://localhost:3001"
-echo "  Frontend: http://localhost:5173"
-echo ""
-echo "Press Ctrl+C to stop both servers"
-echo ""
-
-# Start backend in background
-cd backend && npm run dev &
-BACKEND_PID=$!
-
-# Wait a moment for backend to start
-sleep 2
-
-# Start frontend
-cd frontend && npm run dev &
-FRONTEND_PID=$!
-
-# Wait for both processes
-wait $BACKEND_PID $FRONTEND_PID
+node --import ./backend/node_modules/tsx/dist/loader.mjs backend/src/index.ts &
+api_pid=$!
+node frontend/node_modules/vite/bin/vite.js frontend --host 127.0.0.1 &
+web_pid=$!
+trap 'kill "$api_pid" "$web_pid" 2>/dev/null || true' EXIT INT TERM
+wait -n "$api_pid" "$web_pid"

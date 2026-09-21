@@ -42,3 +42,8 @@ Agreed by the task: capture→dataset, dataset→SQLite/API, legacy→migrated D
 asset→local HTTP and API→browser. Shared synthetic demo covers three symbols,
 ordered and shared photos, none/uninspected/failed discovery, failed/pending download,
 and unsafe Markdown/HTML. Real captures and personal progress are never fixtures.
+
+API DTOs are shared by frontend/backend through `shared/api.ts`. For compatibility,
+legacy SQLite visibility and GET-progress flags are 0/1; the progress update response
+uses a boolean. Consumers accept this explicit union. Dataset identities and media
+states remain strictly validated; this compatibility does not relax the dataset schema.
