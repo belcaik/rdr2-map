@@ -18,7 +18,7 @@ COPY shared shared
 RUN npm run build --prefix backend && npm run build --prefix frontend && npm prune --omit=dev --prefix backend
 
 FROM node:22.22.3-bookworm-slim
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=3001 DATA_ROOT=/data DB_PATH=/data/rdr2.db TILES_DIR=/data/tiles STATIC_ROOT=/app/frontend/dist
+ENV NODE_ENV=production APP_ROOT=/app HOST=0.0.0.0 PORT=3001 DATA_ROOT=/data DB_PATH=/data/rdr2.db TILES_DIR=/data/tiles STATIC_ROOT=/app/frontend/dist
 WORKDIR /app/backend
 COPY backend/package.json backend/package-lock.json ./
 COPY --from=build /app/backend/node_modules ./node_modules

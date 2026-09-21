@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, readFile, writeFile, symlink } from "node:fs/promises";
+import { mkdtemp, rm, readFile, writeFile, symlink, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -123,6 +123,35 @@ test("API retains partial scope, local MIME and ordered associations; rejects co
   } finally {
     if (server) await new Promise<void>((done) => server!.close(() => done()));
     db.close();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("production static routes keep missing resources as 404 and health reports empty or closed SQLite", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "rdr2-static-"));
+  const db = openDatabase(join(dir, "map.db"));
+  const staticRoot = join(dir, "static");
+  await mkdir(staticRoot, { recursive: true });
+  await writeFile(join(staticRoot, "index.html"), "<!doctype html><title>RDR2</title>");
+  await writeFile(join(staticRoot, "app.js"), "console.log('ok')");
+  const server = createApp(db, join(dir, "media"), join(dir, "tiles"), staticRoot).listen(0, "127.0.0.1");
+  try {
+    await new Promise<void>((done) => server.once("listening", done));
+    const address = server.address();
+    assert.ok(address && typeof address !== "string");
+    const base = "http://127.0.0.1:" + address.port;
+    const health = await fetch(base + "/api/health");
+    assert.equal(health.status, 200);
+    assert.equal((await health.json()).data, "empty");
+    assert.equal((await fetch(base + "/map")).status, 200);
+    assert.equal((await fetch(base + "/missing.js")).status, 404);
+    assert.equal((await fetch(base + "/missing.png")).status, 404);
+    assert.equal((await fetch(base + "/api/no-route")).status, 404);
+    assert.equal((await fetch(base + "/api/tiles/2/0/0.jpg")).status, 404);
+    db.close();
+    assert.equal((await fetch(base + "/api/health")).status, 503);
+  } finally {
+    await new Promise<void>((done) => server.close(() => done()));
     await rm(dir, { recursive: true, force: true });
   }
 });

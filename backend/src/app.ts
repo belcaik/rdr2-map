@@ -46,7 +46,14 @@ export function createApp(
     try {
       const result = db.prepare("SELECT 1 AS ready").get() as { ready: number };
       if (result.ready !== 1) throw new Error("database is not ready");
-      res.json({ status: "ok", database: "ready", schemaVersion: 1 });
+      const markers = db.prepare("SELECT count(*) AS count FROM markers").get() as { count: number };
+      res.json({
+        status: "ok",
+        database: "ready",
+        schemaVersion: 1,
+        data: markers.count ? "imported" : "empty",
+        import: markers.count ? null : "Run the compiled importer with dataset.json mounted at /import.",
+      });
     } catch {
       res.status(503).json({ status: "error", database: "unavailable" });
     }
