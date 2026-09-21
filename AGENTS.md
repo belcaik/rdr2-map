@@ -21,3 +21,6 @@ and [migration](docs/migration.md); for source changes read [discovery](docs/sou
 
 Operational commands: [README](README.md). Design decisions: [architecture](docs/architecture.md)
 and [decisions](docs/decisions.md). Reuse/license: [reference port](docs/reference-port.md).
+
+For image, Compose, deployment script or workflow changes, follow the
+[deployment guide](docs/deployment.md) and record verified results in the handoff.

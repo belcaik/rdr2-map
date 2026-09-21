@@ -123,10 +123,12 @@ npm run dev:web -- --host 127.0.0.1
 ```
 
 Backend defaults: port 3001, DB `backend/data/rdr2.db`, media `data/`, existing
-extractor tiles. Export `PORT`, `DB_PATH`, `DATA_ROOT`, `TILES_DIR` to override; use
+extractor tiles. Export `HOST`, `PORT`, `DB_PATH`, `DATA_ROOT`, `TILES_DIR`, `STATIC_ROOT` to override; use
 absolute filesystem paths when starting from a different directory. Backend does not
-implicitly load `.env`. Frontend uses Vite's `VITE_API_BASE` (default
-`http://localhost:3001/api`) and `VITE_TILE_SOURCE=local|none`.
+implicitly load `.env`. Frontend defaults to relative `/api` URLs and `VITE_TILE_SOURCE=local|none`.
+Vite proxies `/api` to `API_TARGET` (default `http://127.0.0.1:3001`);
+`WEB_HOST` and `WEB_PORT` configure its development listener. Production serves
+the compiled frontend from `STATIC_ROOT` through the API, with no Vite process.
 
 ## Checks
 
@@ -146,6 +148,15 @@ servers on 3903/5177, blocks external requests and never touches personal progre
 CI uses only synthetic assets. `npm run contracts` regenerates TypeScript declarations
 from the JSON schema. [QA evidence](docs/qa-review.md) distinguishes offline tests,
 real-source inspection, performance measurements and remaining external limitations.
+
+## LAN deployment
+
+The supported homeserver path, including rootless Podman, Docker compatibility,
+dataset import, GHCR publication, systemd user startup, backups and rollback is
+documented in [docs/deployment.md](docs/deployment.md). It defaults to the
+separate RDR2 installation on LAN port `8081` via SSH alias `baphomet`; keep
+`.env.docker` local and use an
+IP address or local DNS name when opening the map from a phone.
 
 ## API and architecture
 

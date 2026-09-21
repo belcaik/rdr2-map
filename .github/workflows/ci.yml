@@ -1,29 +1,32 @@
-name: local-contract-and-map
+name: Verification
 on:
   push:
   pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   check:
-    runs-on: ubuntu-latest
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22.22.3
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            backend/package-lock.json
-            frontend/package-lock.json
-      - uses: actions/setup-python@v5
+          package-manager-cache: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.11'
       - run: npm ci && npm run install:all
-      - run: pip install -r rdr2_extractor/requirements-pipeline.txt
+      - run: python -m pip install -r rdr2_extractor/requirements-pipeline.txt
       - run: npx --prefix frontend playwright install --with-deps chromium
       - run: npm run check
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: local-map-browser-results
-          path: frontend/test-results
+      - run: python -m unittest discover -s scripts/tests -v
+      - run: bash -n scripts/deploy.sh && shellcheck scripts/deploy.sh
+      - run: docker compose --env-file .env.docker.example config --quiet
+      - run: git diff --check
