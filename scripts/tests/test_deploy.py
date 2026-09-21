@@ -22,6 +22,8 @@ with open(os.environ['CALL_LOG'], 'a') as log:
     log.write(json.dumps([name, *sys.argv[1:]]) + '\\n')
 if name == 'ssh' and os.environ.get('FAIL_SSH') == '1':
     sys.exit(1)
+if name == 'ssh' and any('mktemp .rdr2-image.' in arg for arg in sys.argv):
+    print('.rdr2-image.mock.tar')
 """
         for name in ("ssh", "scp", "rsync"):
             binary = root / name
@@ -36,6 +38,7 @@ if name == 'ssh' and os.environ.get('FAIL_SSH') == '1':
         (self.dataset / "images").mkdir()
         (self.dataset / "images" / "photo.jpg").write_bytes(b"fixture")
         (self.dataset / "old.sqlite-wal").write_bytes(b"must not transfer")
+        (self.dataset / "capture.json").write_text("private capture")
         self.archive = root / "image with spaces.tar"
         self.archive.write_bytes(b"archive")
 
@@ -77,6 +80,10 @@ if name == 'ssh' and os.environ.get('FAIL_SSH') == '1':
         self.assertNotIn("--delete", sync)
         self.assertIn(str(self.dataset) + "/", sync)
         self.assertIn("StrictHostKeyChecking=yes", sync[sync.index("-e") + 1])
+        self.assertIn("--exclude=capture.json", sync)
+        ssh_commands = [call[-1] for call in self.calls() if call[0] == "ssh"]
+        self.assertLess(ssh_commands.index("command -v rsync >/dev/null 2>&1"),
+                        ssh_commands.index("mkdir -p"))
 
     def test_podman_archive_skips_registry_and_installs_boot_service(self):
         result = self.run_deploy("--image-archive", str(self.archive), CONTAINER_ENGINE="podman")
@@ -89,6 +96,16 @@ if name == 'ssh' and os.environ.get('FAIL_SSH') == '1':
         self.assertIn("seq 1 30", commands)
         self.assertIn("map-apps-test-map.service", commands)
         self.assertIn("systemctl --user enable --now", commands)
+        unit_command = next(command for command in commands.splitlines() if "systemd/user" in command)
+        self.assertIn("$HOME/.config/systemd/user", unit_command)
+        self.assertIn(".rdr2-image.mock.tar", commands)
+
+    def test_unsafe_data_path_fails_before_connecting(self):
+        env_file = self.dataset / "unsafe.env"
+        env_file.write_text("MAP_IMAGE=example/map:latest\nSERVER_DATA_DIR=../outside\n")
+        result = self.run_deploy(ENV_FILE=str(env_file))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(self.log.exists())
 
 
 if __name__ == "__main__":

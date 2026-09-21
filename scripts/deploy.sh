@@ -43,6 +43,16 @@ valid_deploy_dir() {
 resolve_repo_path() { if [[ $1 = /* ]]; then printf '%s\n' "$1"; else printf '%s/%s\n' "$REPO_DIR" "$1"; fi; }
 check_file() { [[ -f $1 && -r $1 ]] || die "$2 is not a readable regular file: $1"; }
 check_dataset() { [[ -d $1 && -r $1 ]] || die "dataset directory is not readable: $1"; check_file "$1/dataset.json" dataset.json; }
+read_env_value() {
+  local key=$1 line value
+  while IFS= read -r line || [[ -n $line ]]; do
+    [[ $line =~ ^[[:space:]]*${key}=([^#]*)$ ]] || continue
+    value=${BASH_REMATCH[1]}; value=${value%$'\r'}
+    value=${value##[[:space:]]}; value=${value%%[[:space:]]}
+    printf '%s' "$value"; return 0
+  done < "$LOCAL_ENV_FILE"
+  return 1
+}
 parse_args() {
   while (($#)); do
     case $1 in
@@ -67,6 +77,12 @@ LOCAL_ENV_FILE=$(resolve_repo_path "$ENV_FILE")
 check_file "$COMPOSE_FILE" compose.yaml
 check_file "$LOCAL_ENV_FILE" ENV_FILE
 if [[ $CONTAINER_ENGINE = podman ]]; then check_file "$PODMAN_COMPOSE_FILE" compose.podman.yaml; fi
+MAP_IMAGE=$(read_env_value MAP_IMAGE || true)
+SERVER_DATA_DIR=$(read_env_value SERVER_DATA_DIR || true)
+[[ -n $MAP_IMAGE && $MAP_IMAGE != *[[:space:]]* ]] || die 'ENV_FILE must define a non-empty MAP_IMAGE'
+[[ -n $SERVER_DATA_DIR ]] || die 'ENV_FILE must define SERVER_DATA_DIR'
+[[ $SERVER_DATA_DIR != /* && $SERVER_DATA_DIR != -* && $SERVER_DATA_DIR != *..* && $SERVER_DATA_DIR != *' '* && $SERVER_DATA_DIR =~ ^\.?[A-Za-z0-9._/-]+$ ]] || die 'SERVER_DATA_DIR must be a safe relative path'
+DATA_SUBDIR=${SERVER_DATA_DIR#./}
 if [[ -n $DATASET_DIR ]]; then LOCAL_DATASET_DIR=$(resolve_repo_path "$DATASET_DIR"); check_dataset "$LOCAL_DATASET_DIR"; else LOCAL_DATASET_DIR=''; fi
 if [[ -n $IMAGE_ARCHIVE ]]; then LOCAL_IMAGE_ARCHIVE=$(resolve_repo_path "$IMAGE_ARCHIVE"); check_file "$LOCAL_IMAGE_ARCHIVE" 'image archive'; else LOCAL_IMAGE_ARCHIVE=''; fi
 if (( ! DRY_RUN )); then
@@ -82,20 +98,25 @@ if [[ $CONTAINER_ENGINE = podman ]]; then
   # shellcheck disable=SC2016 # USER and Linger are evaluated on the remote host.
   remote_command 'podman info >/dev/null && podman-compose --version >/dev/null && systemctl --user show-environment >/dev/null && test "$(loginctl show-user "$USER" -p Linger --value)" = yes' || die 'Podman, podman-compose, user systemd and linger are required'
 else remote_command 'docker info >/dev/null && docker compose version >/dev/null' || die 'Docker Engine and Compose are required'; fi
+if [[ -n $LOCAL_DATASET_DIR ]]; then remote_command 'command -v rsync >/dev/null 2>&1' || die 'remote rsync is required with --dataset'; fi
 log "creating deployment directories under ~/$DEPLOY_DIR"
-remote_command "mkdir -p -- $(shell_quote "$DEPLOY_DIR") $(shell_quote "$DEPLOY_DIR/data") $(shell_quote "$DEPLOY_DIR/import")" || die 'remote directory bootstrap failed'
+remote_command "mkdir -p -- $(shell_quote "$DEPLOY_DIR") $(shell_quote "$DEPLOY_DIR/$DATA_SUBDIR") $(shell_quote "$DEPLOY_DIR/import")" || die 'remote directory bootstrap failed'
 log 'copying Compose files and environment'
 run_command scp "${SSH_OPTIONS[@]}" "$COMPOSE_FILE" "$(remote_target "$DEPLOY_DIR/compose.yaml")" || die 'compose.yaml transfer failed'
 run_command scp "${SSH_OPTIONS[@]}" "$LOCAL_ENV_FILE" "$(remote_target "$DEPLOY_DIR/.env.docker")" || die '.env.docker transfer failed'
 if [[ $CONTAINER_ENGINE = podman ]]; then run_command scp "${SSH_OPTIONS[@]}" "$PODMAN_COMPOSE_FILE" "$(remote_target "$DEPLOY_DIR/compose.podman.yaml")" || die 'Podman override transfer failed'; fi
 if [[ -n $LOCAL_DATASET_DIR ]]; then
   log "copying dataset from $LOCAL_DATASET_DIR"
-  run_command rsync -az -e 'ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10' --exclude='*.db' --exclude='*.db-*' --exclude='*.sqlite' --exclude='*.sqlite-*' "$LOCAL_DATASET_DIR/" "$(remote_target "$DEPLOY_DIR/import/")" || die 'dataset transfer failed'
+  run_command rsync -az -e 'ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10' --exclude='*.db' --exclude='*.db-*' --exclude='*.sqlite' --exclude='*.sqlite-*' --exclude='*.sqlite3' --exclude='*.sqlite3-*' --exclude='capture.json' --exclude='capture/' --exclude='report.json' --exclude='screenshots/' "$LOCAL_DATASET_DIR/" "$(remote_target "$DEPLOY_DIR/import/")" || die 'dataset transfer failed'
 fi
 if [[ -n $LOCAL_IMAGE_ARCHIVE ]]; then
   log 'loading supplied image archive'
-  run_command scp "${SSH_OPTIONS[@]}" "$LOCAL_IMAGE_ARCHIVE" "$(remote_target "$DEPLOY_DIR/image.tar")" || die 'image archive transfer failed'
-  remote_command "$REMOTE_CD && $CONTAINER_ENGINE load -i image.tar && rm -- image.tar" || die 'image load failed'
+  if ((DRY_RUN)); then REMOTE_ARCHIVE='.rdr2-image.dry-run.tar'; else
+    # shellcheck disable=SC2029 # mktemp is deliberately evaluated on the remote host.
+    REMOTE_ARCHIVE=$(ssh "${SSH_OPTIONS[@]}" "$SSH_HOST" "$REMOTE_CD && mktemp .rdr2-image.XXXXXX.tar") || die 'remote temporary archive creation failed'
+  fi
+  run_command scp "${SSH_OPTIONS[@]}" "$LOCAL_IMAGE_ARCHIVE" "$(remote_target "$DEPLOY_DIR/$REMOTE_ARCHIVE")" || die 'image archive transfer failed'
+  remote_command "$REMOTE_CD && $CONTAINER_ENGINE load -i $(shell_quote "$REMOTE_ARCHIVE") && rm -- $(shell_quote "$REMOTE_ARCHIVE")" || die 'image load failed'
 else log 'pulling map image'; remote_command "$REMOTE_CD && $REMOTE_COMPOSE pull map" || die 'image pull failed'; fi
 log 'preparing persistent directories'
 if [[ $CONTAINER_ENGINE = podman ]]; then
@@ -127,9 +148,11 @@ ExecStop=/usr/bin/env $REMOTE_COMPOSE stop map
 TimeoutStartSec=120
 TimeoutStopSec=60
 
-[Install]
+  [Install]
 WantedBy=default.target"
   log "enabling user service $UNIT_NAME"
-  remote_command "mkdir -p \"\\$HOME/.config/systemd/user\" && printf '%s\\\\n' $(shell_quote "$UNIT_CONTENT") > \"\\$HOME/.config/systemd/user/$UNIT_NAME\" && systemctl --user daemon-reload && systemctl --user enable --now $(shell_quote "$UNIT_NAME")" || die 'user service installation failed'
+  # shellcheck disable=SC2016 # retain the literal variable for the remote shell.
+  REMOTE_HOME='$HOME'
+  remote_command "mkdir -p \"$REMOTE_HOME/.config/systemd/user\" && printf '%s\\n' $(shell_quote "$UNIT_CONTENT") > \"$REMOTE_HOME/.config/systemd/user/$UNIT_NAME\" && systemctl --user daemon-reload && systemctl --user enable --now $(shell_quote "$UNIT_NAME")" || die 'user service installation failed'
 else remote_command "$REMOTE_CD && $REMOTE_COMPOSE up -d --wait --wait-timeout 120 map" || die 'service start failed'; fi
 if ((DRY_RUN)); then log 'dry-run complete; no files or services changed'; else log "deployment complete: $SSH_HOST:~/$DEPLOY_DIR"; fi
