@@ -8,7 +8,7 @@ R07 QA owns `frontend/tests/`, `frontend/playwright.config.ts`, and this report.
 
 `CHROME_PATH=/path/to/chromium npm run test:e2e --prefix frontend` was executed before implementation. It exited 1 because the importer lacked `--db`; the safety guard stopped the server before opening any database. This is an infrastructure red, not evidence that a behavioral assertion ran.
 
-## Planned behavioral checks
+## Initially planned behavioral checks
 
 - Local photos, ordered gallery, keyboard arrows/Escape, mobile layout, safe Markdown/HTML and no hidden remote image requests.
 - Found progress survives reload, full reimport, partial reimport, with exact API progress values including `found_at` compared before/after.
@@ -16,7 +16,7 @@ R07 QA owns `frontend/tests/`, `frontend/playwright.config.ts`, and this report.
 - Switching from the second image of a multi-photo point to a single-photo point or no-photo point never retains the old photo/index.
 - Confirmed absence, uninspected discovery, failed discovery, pending download, failed download and missing local file are distinguishable.
 
-These checks are not reported as passing until run against integrated implementation. Synthetic screenshots do not establish real-source coordinate alignment.
+At the initial checkpoint these checks had not run against the integrated implementation. Final results appear below. Synthetic screenshots do not establish real-source coordinate alignment.
 
 ## Independent review and corrections
 
@@ -69,3 +69,35 @@ Local files under `artifacts/real/`: `detail-743-desktop.png`, `detail-56-deskto
 `detail-91-desktop.png`, `bone-gallery.png`, `blazing-mobile.png`,
 `control-{158,681,682}-z{3,5}.png`, `measurements.json`. Synthetic E2E screenshots are
 under `frontend/test-results/`; they do not establish real extraction.
+
+## Final automated acceptance
+
+The full offline suite passed from both the working tree and a clean Git archive of
+`8e07a5b` installed with `npm ci` in root/backend/frontend plus a fresh Python3.11
+virtual environment and pinned pipeline requirements. All npm installs reported zero
+known vulnerabilities. The existing local Chromium executable was provided through
+`CHROME_PATH`; CI installs its own Playwright Chromium. Remote GitHub CI was not run.
+
+| Check | Result |
+| --- | --- |
+| Generated contract drift | PASS |
+| ESLint and TypeScript | PASS |
+| Shared valid/invalid Python/TypeScript cases | 22 PASS |
+| SQLite migration/import/media/API tests | 7 PASS |
+| Python normalization/media/resume/source tests | 15 PASS |
+| Production backend/frontend build | PASS |
+| Offline Playwright desktop/mobile/touch/filter/persistence/zoom-pan | 6 PASS (13.9s clean run) |
+| Compiled importer with local demo files | PASS |
+| Startup script and empty DB initialization | PASS |
+| Git index check for databases/downloads/secrets | PASS; tracked empty legacy decoy removed without deleting local file |
+
+The hit-testing test initially clicked before the first Canvas frame and later
+started a drag during zoom animation. It now waits for rendered content, observes
+zoom animation completion and exercises keyboard pan before pointer selection.
+This is synchronization with visible behavior, not a skipped assertion or a disabled
+interaction. All other assertions, including exact progress equality, remain enabled.
+
+The real-data inspection was performed separately with downloaded source media;
+it is not part of CI. It confirmed 74 local symbols and the six-point sample rather
+than asserting that every public photo was downloaded. Premium source omissions,
+obsolete legacy symbol fallback and full-photo storage limits remain explicit.

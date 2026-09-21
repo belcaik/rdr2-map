@@ -21,3 +21,9 @@ GTA `c1a176855abd8a242e86c616e2c52b4c746c2bef`. No reference files were modified
 Dataset schema is code adapted under the reference MIT license; LICENSE retains
 its full notice. Other conceptual patterns are attributed above. External map assets
 are separate from code licensing; see THIRD_PARTY_NOTICES.md.
+
+At final read-only verification, the reference checkout HEAD was
+`321ce242975f09a8bf0100669270faf94651bbb1` with its former source files untracked.
+This session made no writes to that repository and did not reset or integrate that
+changed state. All reuse decisions above refer to the initially audited `72d14e7`
+checkout, not to the later state or to unverified remote changes.

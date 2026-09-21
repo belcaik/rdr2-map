@@ -38,8 +38,8 @@ Temporary acceptance DB/media were used for local visual review, never as defaul
 
 Checks executed: contract generation check; lint; TypeScript; 22 Python/TS contract
 cases; seven backend tests; 15 Python tests; production build. Compiled importer
-accepted the generated demo in an isolated DB. Full E2E finalization and clean-install
-verification are tracked in docs/qa-review.md; consult its final status.
+accepted the generated demo in an isolated DB. Six offline E2E tests passed; a clean Git-archive installation also passed the whole
+`npm run check` sequence. Detailed final evidence is in docs/qa-review.md.
 
 Local screenshots and measurements: `artifacts/real/` (ignored). Inspected RDR2
 controls158/681/682 at zoom3/5; no projection change. Browser reported one Canvas,
@@ -67,3 +67,8 @@ assets, captures, DBs and environment-specific logs are intentionally not tracke
 Start with README and AGENTS. Use disposable DB/data/ports for further tests. The
 personal DB still needs the explicit documented migration when its owner wants to
 switch this installation; do not use it to test. There is no pending publication.
+
+Final acceptance: R01–R08 are complete within documented public-source limits.
+The worktree is committed; no downloaded assets or DBs are tracked. The reference
+checkout changed independently during this long session; the port remains pinned to
+its initially audited SHA, with the final observation recorded in reference-port.md.
