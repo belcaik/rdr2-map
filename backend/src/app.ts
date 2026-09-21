@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { extname, join } from "node:path";
 import type Database from "better-sqlite3";
 import type { Asset } from "../../shared/contract";
 import { markersRouter } from "./routes/markers";
@@ -10,6 +11,7 @@ export function createApp(
   db: Database.Database,
   dataRoot: string,
   tilesRoot: string,
+  staticRoot?: string,
 ) {
   const app = express();
   app.disable("x-powered-by");
@@ -41,8 +43,33 @@ export function createApp(
     }
   });
   app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok", schemaVersion: 1 });
+    try {
+      const result = db.prepare("SELECT 1 AS ready").get() as { ready: number };
+      if (result.ready !== 1) throw new Error("database is not ready");
+      const markers = db.prepare("SELECT count(*) AS count FROM markers").get() as { count: number };
+      res.json({
+        status: "ok",
+        database: "ready",
+        schemaVersion: 1,
+        data: markers.count ? "imported" : "empty",
+        import: markers.count ? null : "Run the compiled importer with dataset.json mounted at /import.",
+      });
+    } catch {
+      res.status(503).json({ status: "error", database: "unavailable" });
+    }
   });
+  if (staticRoot) {
+    app.use("/assets", express.static(join(staticRoot, "assets")));
+    app.use(express.static(staticRoot));
+    app.get("*", (req, res, next) => {
+      if (extname(req.path) || ["/api", "/assets", "/tiles"].some((prefix) => req.path === prefix || req.path.startsWith(prefix + "/"))) {
+        next();
+        return;
+      }
+      res.sendFile(join(staticRoot, "index.html"), (error) => error && next(error));
+    });
+  }
+  app.use((_req, res) => res.status(404).json({ error: "Not found" }));
   app.use(
     (
       error: Error,

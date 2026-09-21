@@ -11,5 +11,8 @@ identity reset and keyboard/touch controls, offline E2E, independent review, rea
 source evidence, desktop/mobile inspection, alignment checks and scale measurements.
 Fixtures prove behavior, not extraction. Unavailable external evidence stays open.
 
-No accounts, cloud, AI backend, stack replacement, multigame framework or deployment.
+No accounts, AI backend, stack replacement or multigame framework.
+The original P0 excluded deployment; the 2026-09-21 request adds the isolated LAN
+installation and public GitHub image workflows in [D01–D04](tasks.md#lan-deployment-2026-09-21),
+with operational acceptance in [deployment](deployment.md).
 The GTA repository is read-only. Root configuration/contracts have one owner.
