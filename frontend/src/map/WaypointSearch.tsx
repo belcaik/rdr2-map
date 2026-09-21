@@ -7,7 +7,7 @@ export default function WaypointSearch({ markers, visibleCategories, foundMarker
   const results = useMemo(() => markers.filter(point => visibleCategories.has(point.category_id) && !(hideFound && foundMarkers.has(point.id)) && point.name.toLowerCase().includes(query.toLowerCase())).slice(0, 30), [markers, visibleCategories, foundMarkers, hideFound, query]);
   return <div className="waypoint-search">
     <label htmlFor="waypoint-search">RDR2 Map</label>
-    <input id="waypoint-search" type="search" placeholder="Search waypoints" value={query} onFocus={() => setOpen(true)} onChange={event => { setQuery(event.target.value); setOpen(true); }} onKeyDown={event => { if (event.key === 'Escape') setOpen(false); }} aria-expanded={open} aria-controls="waypoint-results" />
+    <input id="waypoint-search" type="search" placeholder="Search waypoints" value={query} onFocus={() => setOpen(true)} onChange={event => { setQuery(event.target.value); setOpen(true); }} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); setOpen(false); } }} aria-expanded={open} aria-controls="waypoint-results" />
     {open && <div id="waypoint-results" className="search-results">
       <button className="search-close" onClick={() => setOpen(false)}>Close results</button>
       {results.map(point => <button key={point.id} aria-label={point.name} onClick={() => { onSelect(point); setOpen(false); }}>{point.name}<small>{point.category_title} · {point.id}</small></button>)}

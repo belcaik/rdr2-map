@@ -11,15 +11,16 @@
     "contracts:check": "node scripts/contracts.mjs --check",
     "demo": "node scripts/demo.mjs",
     "dev:api": "npm run dev --prefix backend",
-    "dev:web": "npm run dev --prefix frontend",
-    "migrate": "npm run migrate --prefix backend --",
-    "import": "npm run import-data --prefix backend --",
+    "dev:web": "npm run dev --prefix frontend --",
+    "migrate": "node backend/node_modules/tsx/dist/cli.mjs backend/src/db/migrate.ts",
+    "import": "node backend/node_modules/tsx/dist/cli.mjs backend/src/db/import.ts",
     "types": "npm run types --prefix backend && npm run types --prefix frontend",
     "lint": "eslint backend/src shared scripts && npm run lint --prefix frontend",
-    "test": "npm test --prefix backend && python -m unittest discover -s rdr2_extractor/tests",
+    "test": "npm run test:contracts && npm test --prefix backend && python -m unittest discover -s rdr2_extractor/tests",
     "test:e2e": "npm run test:e2e --prefix frontend",
     "build": "npm run build --prefix backend && npm run build --prefix frontend",
-    "check": "npm run contracts:check && npm run lint && npm run types && npm test && npm run build && npm run test:e2e"
+    "check": "npm run contracts:check && npm run lint && npm run types && npm test && npm run build && npm run test:e2e",
+    "test:contracts": "node backend/node_modules/tsx/dist/cli.mjs scripts/contract-parity.ts"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
   "homepage": "https://github.com/belcaik/rdr2-map#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "ajv": "^8.20.0",
     "eslint": "^10.11.0",
     "json-schema-to-typescript": "^16.0.0",
     "typescript": "^6.0.3",

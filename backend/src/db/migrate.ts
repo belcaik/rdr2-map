@@ -3,7 +3,7 @@ import { migrateDatabase } from "./schema";
 const args = process.argv.slice(2);
 const index = args.indexOf("--db");
 if (
-  args.some((arg, i) => arg.startsWith("--") && arg !== "--db") ||
+  args.some((arg) => arg.startsWith("--") && arg !== "--db") ||
   (index >= 0 && !args[index + 1])
 )
   throw new Error("Usage: migrate --db DATABASE");

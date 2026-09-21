@@ -82,7 +82,12 @@ export async function installFiles(
           .digest("hex") === item.sha256
       )
         continue;
-    } catch {}
+    } catch (error) {
+      // A missing destination is expected on first import; other failures need attention.
+      if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+        throw error;
+      }
+    }
     const temporary = destination + "." + randomUUID() + ".tmp";
     try {
       await writeFile(temporary, await readFile(src), { flag: "wx" });

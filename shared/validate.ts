@@ -1,4 +1,4 @@
-import Ajv from '../backend/node_modules/ajv';
+import Ajv from 'ajv';
 import schema from '../schemas/dataset.schema.json';
 import type { Dataset } from './contract';
 
@@ -57,7 +57,7 @@ export function validateDataset(input: unknown): Dataset {
     require(tile.status !== 'failed' || tile.error, 'Failed tile lacks reason');
   }
   if (data.coverage.complete) require(data.coverage.filters.length === 0 && data.coverage.omissions.length === 0 && data.coverage.discovered === data.waypoints.length, 'Incomplete waypoint coverage');
-  if (data.coverage.mediaComplete) require(data.waypoints.every(p => p.imageDiscovery === 'none' || p.imageDiscovery === 'present') && data.assets.every(a => a.status === 'downloaded'), 'Incomplete media');
+  if (data.coverage.mediaComplete) require(data.categories.every(c => c.iconAssetId !== null) && data.waypoints.every(p => p.imageDiscovery === 'none' || p.imageDiscovery === 'present') && data.assets.every(a => a.status === 'downloaded'), 'Incomplete media');
   if (data.coverage.tilesComplete) require(data.tiles.length > 0 && data.tiles.every(t => t.status === 'downloaded'), 'Incomplete tiles');
   return data;
 }

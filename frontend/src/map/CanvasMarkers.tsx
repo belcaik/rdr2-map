@@ -60,6 +60,7 @@ export default function CanvasMarkers({ markers, foundMarkers, selectedId, onMar
           image = images.current.get(asset.id);
           if (!image) {
             image = new Image();
+            image.crossOrigin = 'anonymous';
             images.current.set(asset.id, image);
             image.src = assetUrl(asset.id);
           }

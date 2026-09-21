@@ -10,13 +10,10 @@ export default function Detail({ id, found, onToggle, onClose }: { id: number; f
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement;
-    return () => {
-      if (previous instanceof HTMLElement && previous !== document.body && previous !== document.documentElement && previous.isConnected) previous.focus();
-      else document.getElementById('waypoint-search')?.focus();
-    };
-  }, []);
+  const close = () => {
+    onClose();
+    queueMicrotask(() => document.getElementById('waypoint-search')?.focus());
+  };
   useEffect(() => {
     const controller = new AbortController();
     fetchMarker(id, controller.signal).then(setPoint).catch(error => { if (!controller.signal.aborted) setError(error.message); });
@@ -24,9 +21,9 @@ export default function Detail({ id, found, onToggle, onClose }: { id: number; f
   }, [id]);
   useEffect(() => { if (point) heading.current?.focus(); }, [point]);
   return <aside className="waypoint-detail" aria-label="Waypoint details" onKeyDown={event => {
-    if (event.key === 'Escape' && !(event.target as HTMLElement).closest('dialog')) { event.stopPropagation(); onClose(); }
+    if (event.key === 'Escape' && !(event.target as HTMLElement).closest('dialog')) { event.stopPropagation(); close(); }
   }}>
-    <button className="detail-close" aria-label="Close waypoint details" onClick={onClose}>Close</button>
+    <button className="detail-close" aria-label="Close waypoint details" onClick={close}>Close</button>
     {error && <p role="alert">{error}</p>}
     {!point && !error && <p role="status">Loading waypoint…</p>}
     {point && <>
