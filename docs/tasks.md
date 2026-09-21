@@ -42,3 +42,24 @@ R08 involved independent cross-reviews by real subagents. Provider quota prevent
 late follow-up turns; final corrections/reruns were completed by the orchestrator.
 Premium coverage and full-photo storage remain declared external/scope limits, not
 completed extraction claims. All source/media artifacts and databases remain ignored.
+
+## LAN deployment (2026-09-21)
+
+Base `6717fa9ffdf4bcf9bd4c98bfaddafd2633203e87`: clean local main, tracking
+origin/main, independently matched by `git ls-remote origin refs/heads/main`.
+Integration branch: `feat/docker-homeserver`. This user request extends the original
+P0 scope to containers, CI and a separate LAN installation. Publication is pending
+explicit destination authorization. Contract v1 and personal progress stay intact.
+
+| ID | Owner / exclusive paths | Depends | State | Acceptance |
+|---|---|---|---|---|
+| D01 | runtime worktree: backend/, frontend/, Dockerfile, Compose, env/ignore files | base | en curso | Same origin, SQLite health, resource 404, non-root clean image, compiled import |
+| D02 | deploy worktree: scripts/deploy.sh, scripts/tests/test_deploy.py | base; D01 interface | en curso | Strict SSH, validated inputs, dry-run, archive/import/health, Docker and rootless Podman, systemd |
+| D03 | CI/docs worktree: .github/workflows/, docs/deployment.md, README, AGENTS | base; D01/D02 interface | en curso | Public-only jobs, pinned actions, no artifact/cache costs, operational steps and recovery |
+| D04 | root: integration, tasks/handoff, isolated QA and sole remote deploy owner | D01–D03 | en curso | Project checks, synthetic Docker, real LAN desktop/mobile, persistence, service restart, backup restoration, GTA intact |
+
+Workers use isolated worktrees from the same base; integration owner reviews and
+cherry-picks local commits. Runtime internal port is 3001; proposed external port
+8081 was observed free. Import entrypoint is compiled JavaScript under
+`/app/backend/dist/backend/src/db/import.js`. Image contains no dataset. Database,
+media and tiles belong under `/data`. Final evidence belongs in the handoff.
