@@ -53,13 +53,19 @@ explicit destination authorization. Contract v1 and personal progress stay intac
 
 | ID | Owner / exclusive paths | Depends | State | Acceptance |
 |---|---|---|---|---|
-| D01 | runtime worktree: backend/, frontend/, Dockerfile, Compose, env/ignore files | base | en curso | Same origin, SQLite health, resource 404, non-root clean image, compiled import |
-| D02 | deploy worktree: scripts/deploy.sh, scripts/tests/test_deploy.py | base; D01 interface | en curso | Strict SSH, validated inputs, dry-run, archive/import/health, Docker and rootless Podman, systemd |
-| D03 | CI/docs worktree: .github/workflows/, docs/deployment.md, README, AGENTS | base; D01/D02 interface | en curso | Public-only jobs, pinned actions, no artifact/cache costs, operational steps and recovery |
-| D04 | root: integration, tasks/handoff, isolated QA and sole remote deploy owner | D01–D03 | en curso | Project checks, synthetic Docker, real LAN desktop/mobile, persistence, service restart, backup restoration, GTA intact |
+| D01 | runtime worktree: backend/, frontend/, Dockerfile, Compose, env/ignore files | base | hecha | Same origin, SQLite health, resource 404, non-root clean image, compiled import |
+| D02 | deploy worktree: scripts/deploy.sh, scripts/tests/test_deploy.py | base; D01 interface | hecha | Strict SSH, validated inputs, dry-run, archive/import/health, Docker and rootless Podman, systemd |
+| D03 | CI/docs worktree: .github/workflows/, docs/deployment.md, README, AGENTS | base; D01/D02 interface | hecha | Public-only jobs, pinned actions, no artifact/cache costs, operational steps and recovery |
+| D04 | root: integration, tasks/handoff, isolated QA and sole remote deploy owner | D01–D03 | hecha | Project checks, synthetic Docker, real LAN desktop/mobile, persistence, service restart, backup restoration, GTA intact |
 
 Workers use isolated worktrees from the same base; integration owner reviews and
 cherry-picks local commits. Runtime internal port is 3001; proposed external port
 8081 was observed free. Import entrypoint is compiled JavaScript under
 `/app/backend/dist/backend/src/db/import.js`. Image contains no dataset. Database,
 media and tiles belong under `/data`. Final evidence belongs in the handoff.
+
+
+D01–D04 accepted locally and on the LAN. Root completed workflow implementation,
+script hardening and integration; independent runtime reviewer checked the final
+script/workflows. Evidence and explicit remote-publication limits are in the
+latest [handoff](context-handoff.md#container-and-lan-delivery-2026-09-21).

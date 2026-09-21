@@ -76,9 +76,9 @@ parse_args() {
     case $1 in
       -h|--help) usage; exit 0 ;;
       --dry-run) DRY_RUN=1 ;;
-      --dataset) (($# >= 2)) || die '--dataset requires a directory'; DATASET_DIR=$2; shift ;;
+      --dataset) (($# >= 2)) || die '--dataset requires a directory'; [[ -n $2 ]] || die '--dataset requires a directory'; DATASET_DIR=$2; shift ;;
       --dataset=*) DATASET_DIR=${1#*=}; [[ -n $DATASET_DIR ]] || die '--dataset requires a directory' ;;
-      --image-archive) (($# >= 2)) || die '--image-archive requires a file'; IMAGE_ARCHIVE=$2; shift ;;
+      --image-archive) (($# >= 2)) || die '--image-archive requires a file'; [[ -n $2 ]] || die '--image-archive requires a file'; IMAGE_ARCHIVE=$2; shift ;;
       --image-archive=*) IMAGE_ARCHIVE=${1#*=}; [[ -n $IMAGE_ARCHIVE ]] || die '--image-archive requires a file' ;;
       *) die "unknown argument: $1" ;;
     esac

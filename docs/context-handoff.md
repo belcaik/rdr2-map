@@ -1,5 +1,161 @@
 # Context handoff
 
+## Container and LAN delivery (2026-09-21)
+
+Branch `feat/docker-homeserver`, base `6717fa9ffdf4bcf9bd4c98bfaddafd2633203e87`.
+The initial worktree was clean, local main and origin/main matched, and
+`git ls-remote origin refs/heads/main` independently confirmed the same SHA.
+This was not the empty-local-main situation from GTA. Planning is commit
+`362ec1d`; runtime integration is `d558633`, `e1123b4`, `12be40b`; deployment and
+workflow integration includes `b20ef8e`, `d60de06`, `f307082` and later checks/docs.
+All commits remain local. No push, PR, merge, Actions execution, GHCR package
+publication/visibility change or anonymous GHCR pull occurred in this session.
+The existing repository was confirmed public with default branch main.
+
+### Implementation and coordination
+
+Three isolated worktrees started at the same base: runtime, deployment script,
+and documentation/workflows, with exclusive file ownership. Lower-cost Luna was
+requested; deploy and docs used Luna, while the full-history runtime worker
+inherited the primary session model. Root integrated and reviewed their changes,
+completed workflow implementation and script hardening, and was the sole remote
+operator. The runtime worker independently reviewed the final script/workflows.
+The deployment worker amended its initial commit; root resolved the resulting
+add/add integration conflict by retaining its revised files, then ran the tests.
+
+- One Node 22.22.3 image serves frontend/API/media; production has no scraper,
+  host node_modules, TypeScript runner, dataset, DB or game assets in its layers.
+  Runtime is UID/GID 1000, `/data` is writable, internal HTTP is 3001. Compiled
+  entrypoints are `dist/backend/src/index.js` and `dist/backend/src/db/import.js`
+  from `/app/backend`; generated JSON schemas ship with the compiled backend.
+- `HOST`, `PORT`, `DB_PATH`, `DATA_ROOT`, `TILES_DIR`, `STATIC_ROOT` configure the
+  API; `APP_ROOT=/app` identifies the container root without changing development
+  DB defaults. Frontend defaults to `/api`; Vite's `WEB_HOST`, `WEB_PORT`,
+  `API_TARGET` proxy is development-only. API/resource misses stay 404, SPA
+  navigation works, SQLite failures return 503, empty DB health returns import guidance.
+- Compose base has the scalar healthcheck shared by both engines. Podman override
+  uses keep-id. Script validates literal configuration, strict SSH and dependencies
+  before copying, transfers a filtered dataset without deletion, loads a unique
+  archive or pulls, imports compiled JS, waits for real health, and enables user systemd.
+- Public-only Actions jobs use standard Ubuntu 24.04 runners, bounded timeouts,
+  concurrency cancellation, pinned official action commits and scoped package write
+  permission. No artifact upload or cache: explicit setup-node/Buildx/QEMU cache
+  disabling and `DOCKER_BUILD_RECORD_UPLOAD=false`. PR builds cannot publish;
+  default-branch push/manual jobs publish full-SHA/latest tags. Manual multiarch
+  includes AMD64; later automatic pushes return to AMD64. Current official billing
+  sources and package visibility steps are linked from [deployment](deployment.md).
+
+### Commands and local evidence
+
+Private logs, screenshots, scripts and measured addresses are under ignored
+`artifacts/deployment/`; private configuration is `.env.docker`. Nothing there
+is required for CI. Isolated synthetic data/DB were under `/tmp/rdr2-container-qa`.
+
+Executed:
+
+```bash
+source rdr2_extractor/venv/bin/activate
+python -m rdr2_extractor.pipeline --output data/public-enriched --phase validate
+CHROME_PATH=/home/belcaik/.cache/selenium/chrome/linux64/153.0.8010.52/chrome npm run check
+python -m unittest discover -s scripts/tests -v
+bash -n scripts/deploy.sh
+shellcheck scripts/deploy.sh
+actionlint .github/workflows/ci.yml .github/workflows/docker.yml
+git diff --check
+docker build -t localhost/rdr2-map:local .
+docker compose --env-file .env.docker config -q
+docker save -o /tmp/rdr2-map.tar localhost/rdr2-map:local
+```
+
+The actual browser path was the installed Selenium Chromium 153 binary; it is
+shown above for reproducibility, not required in CI. `npm run check` passed contracts,
+lint, types, 22 TS/Python parity cases, eight backend tests, 15 Python tests,
+build and six offline E2E tests. Script tests: 11 passing, including empty options,
+malicious dotenv, strict transports, space-containing local paths, preflight/health
+failure order, archive-without-pull, shell syntax and actual rsync exclusion behavior.
+ShellCheck 0.11.0 and actionlint 1.7.12 passed. Action release tags/commit targets
+and manifests were fetched from official repositories before pinning.
+
+Client had no rsync or passwordless sudo. Built upstream rsync 3.5.1 with
+`./configure --prefix=/home/belcaik/.local --disable-md2man`, `make -j4`,
+`make install`; verified the installed version. No server binary was borrowed.
+Synthetic image tests verified all five downloaded demo assets, six missing-resource
+404s, default empty startup without Compose, no tsx, Node/UID, compiled import,
+reimport preserving found_at, and container recreation preserving progress.
+Docker Compose's scalar healthcheck reached healthy at an isolated loopback port.
+A Vite run with explicit WEB_HOST/WEB_PORT/API_TARGET correctly proxied eight demo
+points. Only these dedicated QA containers/network were removed afterward.
+
+### LAN evidence
+
+SSH strict host-key checking passed. Observed server: x86_64 Ubuntu, Podman 4.9.3
+rootless, podman-compose 1.0.6, SSH UID/GID 1000, `Linger=yes`, working user systemd,
+remote rsync, free port 8081 and initially 11 GiB available (9.2 GiB after deployment
+and retained backup/restore copy). Existing services were recorded before mutation.
+No sudo, host restart, Caddy change or unrelated service change was performed.
+
+Image ID `sha256:fcec6a1b68196e50db98ae6f6b9d9bd4cc9920b060a7cf9523b6c568134d1f31`,
+293,594,734 bytes, was built from the runtime at `12be40b`, tagged
+`localhost/rdr2-map:local`, saved locally and transferred over SSH. The tar was
+loaded with Podman and only its temporary remote upload was removed.
+
+```bash
+SSH_HOST=baphomet DEPLOY_DIR=apps/rdr2-map CONTAINER_ENGINE=podman \
+  ./scripts/deploy.sh --dry-run --image-archive /tmp/rdr2-map.tar --dataset data/public-enriched
+SSH_HOST=baphomet DEPLOY_DIR=apps/rdr2-map CONTAINER_ENGINE=podman \
+  ./scripts/deploy.sh --image-archive /tmp/rdr2-map.tar --dataset data/public-enriched
+# After correcting the podman-compose ps compatibility issue, no repeat import:
+SSH_HOST=baphomet DEPLOY_DIR=apps/rdr2-map CONTAINER_ENGINE=podman \
+  ./scripts/deploy.sh --image-archive /tmp/rdr2-map.tar
+rsync -a -e 'ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10' \
+  rdr2_extractor/data/tiles/ baphomet:apps/rdr2-map/data/tiles/
+```
+
+The first deployment imported successfully but exited on its health-wait gate:
+podman-compose 1.0.6 rejects `ps -q map`. Corrected to `ps -q`, added a regression,
+and reran without import; final script reported success only after real health
+and active/enabled systemd checks. An HTTP scan overlapping that deliberate
+recreation was interrupted; the complete stable-server scan below passed.
+
+Final installation: `apps/rdr2-map`, Compose `rdr2-map`, LAN port 8081, unit
+`map-apps-rdr2-map.service` active/enabled, container `rdr2-map_map_1` healthy,
+SQLite owner 1000:1000 mode 0644. The LAN address is supplied in the user delivery,
+not committed. Imported 6,149 RDR2 points, 74 icons and 414 photos. All 488 assets
+returned expected MIME/hash; HTML, JS/CSS and missing API/assets/tiles checks passed.
+All 4,033 existing tile files matched local checksums with `rsync -anc`.
+
+Browser validation used the real LAN origin: desktop 1440×1000 and mobile viewport
+390×844; local map/tiles, two-photo gallery, modal and category filters worked.
+No page errors, unexpected external requests, HTTP failures or horizontal overflow.
+Point 56 was marked in the UI, read from another independent browser context,
+and retained its exact found_at across `up -d --force-recreate map` and
+`systemctl --user restart map-apps-rdr2-map.service`. The test row was then removed
+with an exact-ID/timestamp guard to restore the originally absent row. LAN progress
+is empty again. No physical phone or full homeserver reboot was tested.
+
+Stopped only the RDR2 unit, copied all data plus environment/Compose/image reference
+into its own `backups/verified-*`, and restarted it. Restored the copy under a
+separate `restore-check-*` directory, compared every file, then ran a separate
+rootless container on loopback 18081. Real health passed, SQLite integrity_check
+was `ok`, point count was 6,149, progress rows zero, and a local photograph was
+served. The first stdin-fed verification harness did not finish its assertions;
+the standalone saved verifier completed and emitted `RESTORE_VERIFIED`. Verification
+container was removed; backup and restore data remain under the RDR2 installation.
+Exact private paths are in ignored `artifacts/deployment/restore-check.log`.
+
+Every pre-existing server container retained its ID; GTA remained healthy on 8080.
+The PC's personal DB was read only: schema 1, 6,150 markers and one progress row,
+with identical before/after progress digest. Its progress was not migrated to LAN.
+The deployment imported the full source dataset into a separate new database.
+
+### Remaining publication steps
+
+With destination-specific authorization, push/open PR, observe real CI and image
+build results, then merge/publish GHCR, verify package visibility and anonymous
+SHA pull, and update MAP_IMAGE (prefer digest for immutable content). None of these
+remote results is implied by the local checks above. Revisit the current GitHub
+billing policy before publication; no future pricing guarantee is made.
+
 ## PR preparation (2026-09-21)
 
 The user authorized commits and publication of a PR to `main`. Documentation fixes

@@ -66,6 +66,12 @@ if name == 'ssh' and any('mktemp .rdr2-image.' in arg for arg in sys.argv):
         self.assertEqual(len(self.calls()), 1)
         self.assertEqual(self.calls()[0][-1], "true")
 
+    def test_missing_option_values_fail_before_connecting(self):
+        for args in (("--dataset",), ("--dataset", ""), ("--image-archive", ""), ("--unknown",)):
+            with self.subTest(args=args):
+                self.assertNotEqual(self.run_deploy(*args).returncode, 0)
+                self.assertFalse(self.log.exists())
+
     def test_unsafe_inputs_fail_before_connecting(self):
         for env in ({"DEPLOY_DIR": "../outside"}, {"SSH_HOST": "-oBadOption"},
                     {"CONTAINER_ENGINE": "podman;bad"}):
