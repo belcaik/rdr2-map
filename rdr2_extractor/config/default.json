@@ -6,7 +6,7 @@
   },
   "browser": {
     "headless": true,
-    "stealth_mode": true,
+    "stealth_mode": false,
     "interactions": [
       "zoom_in",
       "zoom_out",
@@ -33,7 +33,15 @@
     "source": "mapgenie.io",
     "base_url": "https://tiles.mapgenie.io/games/rdr2/world/atlas-dark-v1",
     "format": "jpg",
-    "zoom_levels": [0, 1, 2, 3, 4, 5, 6],
+    "zoom_levels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
     "skip_existing": true
   },
   "output": {

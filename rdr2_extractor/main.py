@@ -482,6 +482,8 @@ def main():
     )
 
     args = parser.parse_args()
+    if not args.tiles_only:
+        parser.error("Dataset extraction moved to python -m rdr2_extractor.pipeline from repository root; this legacy entrypoint only supports --tiles-only")
 
     # Setup logging
     setup_logging(level=args.log_level)
@@ -494,8 +496,7 @@ def main():
         # Override config with command line arguments
         if args.headless:
             config.set("browser.headless", True)
-        if args.no_stealth:
-            config.set("browser.stealth_mode", False)
+        config.set("browser.stealth_mode", False)
         config.set("download.max_tiles", args.max_tiles)
         config.set("download.rate_limit", args.rate_limit)
         config.set("download.max_concurrent", args.max_concurrent)
