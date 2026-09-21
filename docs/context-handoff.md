@@ -1,5 +1,39 @@
 # Context handoff
 
+## Photo inspection follow-up (2026-09-21)
+
+The reported missing photographs were a selection/import mismatch, not a failed
+download or gallery defect. `run.sh --output data/all-public` still defaults to
+six points; the subsequent command imported `data/sample/dataset.json`. Both local
+datasets contained six points and five downloaded photos. Read-only inspection of
+the installed DB found 5,715 uninspected points, four present and two none. Its live
+API returned waypoint56's two-photo gallery and served media-81495 with HTTP200
+and 424,516 bytes. No application code or personal DB was changed in this follow-up.
+
+Executed full enrichment with
+`./rdr2_extractor/run.sh --capture data/all-public/capture.json --output data/public-enriched --sample 0`,
+then `./rdr2_extractor/run.sh --output data/public-enriched --phase validate`.
+Result: 6,149 points, 408 with photos, 5,741 confirmed none, 74 icons and 414 photos
+downloaded, 159,170,950 stored bytes, no failures. This supersedes the earlier
+full-photo storage limitation below. Capture reuse means no new enumeration was
+performed; premium omissions and tile coverage are unchanged. Artifacts are ignored.
+
+Imported that dataset with `npm run import -- data/public-enriched/dataset.json --db /tmp/rdr2-photo-check.I17uK3/map.sqlite --data-root /tmp/rdr2-photo-check.I17uK3/media`.
+A Node HTTP harness used the compiled app on an ephemeral loopback port: all 6,149
+temporary DB points were inspected, all 488 assets returned HTTP200 with expected
+byte lengths, and waypoint56 returned two photos. An initial harness invocation
+preceded import completion and saw an empty DB; it was rerun after successful import.
+The personal DB remains at its original six-point enrichment; the final response
+supplies the matching full-dataset import command for the installation.
+
+Ran `source rdr2_extractor/venv/bin/activate` and `npm run check`: contracts, lint,
+types, 22 parity cases, seven backend tests, 15 Python tests and build passed.
+E2E could not launch its missing bundled browser. Repeated with
+`CHROME_PATH=/home/belcaik/.cache/selenium/chrome/linux64/153.0.8010.52/chrome npm run test:e2e`:
+all six passed. `git diff --check` passed. README instructions now pair full extraction
+with the same import path and explain sample/mediaComplete/resume scope. No push or
+PR publication was performed.
+
 ## Scope and branch
 
 P0 implementation on `feature/rdr2-local-media-p0`. Target base `817e768`, reference
