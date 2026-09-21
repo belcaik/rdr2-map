@@ -1,5 +1,16 @@
 # Context handoff
 
+## GitHub publication follow-up (2026-09-21)
+
+The user authorized PR-to-main and GHCR publication in this session. Branch
+`feat/docker-homeserver` is published and [PR #2](https://github.com/belcaik/rdr2-map/pull/2)
+is open. The initial HTTPS push had no usable Git credential; the existing verified
+SSH GitHub identity successfully published the branch without changing the remote URL.
+The PR runs real Verification and Docker image jobs; its publish job is skipped by
+design. Merge and the main publication are gated on passing checks. Final run links,
+registry reference and anonymous-pull evidence are recorded on the PR when completed.
+Earlier no-publication statements below describe the preceding LAN-only checkpoint.
+
 ## Container and LAN delivery (2026-09-21)
 
 Branch `feat/docker-homeserver`, base `6717fa9ffdf4bcf9bd4c98bfaddafd2633203e87`.
