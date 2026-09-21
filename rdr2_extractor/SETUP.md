@@ -1,18 +1,18 @@
 # Extractor setup
 
-Use Python 3.11+ and the pipeline requirements from repository root:
+Use Python 3.11 or 3.12 and the pipeline requirements from repository root:
 
 ```sh
-python3 -m venv .venv
+python3.11 -m venv .venv
 .venv/bin/pip install -r rdr2_extractor/requirements-pipeline.txt
 .venv/bin/python -m rdr2_extractor.pipeline --help
 ```
 
-Install Chrome/Chromium for live public capture; normalize/validate and tests work
-offline. `run.sh` selects the root `.venv`, an existing `rdr2_extractor/venv`, or
-system python3 in that order. It forwards all arguments to the canonical pipeline.
-No pyenv version mutation or activation is required.
+Alternatively, `PYTHON=python3.11 ./rdr2_extractor/setup.sh` performs those installation
+steps without changing your Python version manager. Install Chrome/Chromium for live
+public capture; normalize/validate and tests work offline. `run.sh` selects the root
+`.venv`, an existing `rdr2_extractor/venv`, or system python3 in that order.
 
-See [README](README.md) for extraction, resumable enrichment and separate legacy
-tile maintenance. Legacy `setup.sh`/`requirements.txt` provision the old tile utility;
-they are not dependencies of the dataset producer.
+See [README](README.md) for extraction, resumable enrichment and optional tile
+maintenance. The older `requirements.txt` belongs to that tile utility; it is not
+required by the dataset producer. Pipeline configuration uses CLI arguments.

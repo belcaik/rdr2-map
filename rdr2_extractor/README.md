@@ -6,7 +6,7 @@ IDs and associations, downloads verified category symbols and photos, validates,
 and atomically exports `dataset.json` and `report.json`. It never opens the app DB.
 
 ```sh
-python3 -m venv .venv
+python3.11 -m venv .venv
 .venv/bin/pip install -r rdr2_extractor/requirements-pipeline.txt
 .venv/bin/python -m rdr2_extractor.pipeline --output data/sample --sample 6
 .venv/bin/python -m rdr2_extractor.pipeline --output data/sample --resume
