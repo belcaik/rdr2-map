@@ -48,8 +48,8 @@ completed extraction claims. All source/media artifacts and databases remain ign
 Base `6717fa9ffdf4bcf9bd4c98bfaddafd2633203e87`: clean local main, tracking
 origin/main, independently matched by `git ls-remote origin refs/heads/main`.
 Integration branch: `feat/docker-homeserver`. This user request extends the original
-P0 scope to containers, CI and a separate LAN installation. Publication is pending
-explicit destination authorization. Contract v1 and personal progress stay intact.
+P0 scope to containers, CI and a separate LAN installation. Publication was subsequently authorized for PR #2 to main and GHCR;
+see the latest handoff and PR checks for remote evidence. Contract v1 and personal progress stay intact.
 
 | ID | Owner / exclusive paths | Depends | State | Acceptance |
 |---|---|---|---|---|
