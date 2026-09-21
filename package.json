@@ -1,0 +1,44 @@
+{
+  "name": "rdr2-map",
+  "version": "0.1.0",
+  "description": "Local RDR2 map and extraction pipeline",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "install:all": "npm ci --prefix backend && npm ci --prefix frontend",
+    "contracts": "node scripts/contracts.mjs",
+    "contracts:check": "node scripts/contracts.mjs --check",
+    "demo": "node scripts/demo.mjs",
+    "dev:api": "npm run dev --prefix backend",
+    "dev:web": "npm run dev --prefix frontend",
+    "migrate": "npm run migrate --prefix backend --",
+    "import": "npm run import-data --prefix backend --",
+    "types": "npm run types --prefix backend && npm run types --prefix frontend",
+    "lint": "eslint backend/src shared scripts && npm run lint --prefix frontend",
+    "test": "npm test --prefix backend && python -m unittest discover -s rdr2_extractor/tests",
+    "test:e2e": "npm run test:e2e --prefix frontend",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "check": "npm run contracts:check && npm run lint && npm run types && npm test && npm run build && npm run test:e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/belcaik/rdr2-map.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/belcaik/rdr2-map/issues"
+  },
+  "homepage": "https://github.com/belcaik/rdr2-map#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "json-schema-to-typescript": "^16.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.22.3 <23"
+  }
+}

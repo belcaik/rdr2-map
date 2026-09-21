@@ -7,17 +7,22 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "types": "tsc -b",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.21",
+    "dompurify": "^3.4.15",
     "leaflet": "^1.9.4",
+    "marked": "^18.0.13",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",

@@ -1,0 +1,672 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "gameId": {
+      "const": "rdr2"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^https://[^\\s]+$"
+        },
+        "kind": {
+          "enum": [
+            "live",
+            "capture",
+            "synthetic"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "url",
+        "kind",
+        "evidence"
+      ]
+    },
+    "extractedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/MapConfig"
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Category"
+      }
+    },
+    "waypoints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Waypoint"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Asset"
+      }
+    },
+    "tiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Tile"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "discovered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "scopeMapIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "mediaComplete": {
+          "type": "boolean"
+        },
+        "tilesComplete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "complete",
+        "filters",
+        "discovered",
+        "omissions",
+        "scopeMapIds",
+        "mediaComplete",
+        "tilesComplete"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "gameId",
+    "source",
+    "extractedAt",
+    "runId",
+    "maps",
+    "categories",
+    "waypoints",
+    "assets",
+    "tiles",
+    "coverage"
+  ],
+  "definitions": {
+    "MapConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "crs": {
+          "enum": [
+            "simple",
+            "EPSG3857"
+          ]
+        },
+        "axes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transform": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "bounds": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "tileSize": {
+          "const": 256
+        },
+        "minZoom": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxZoom": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tileScheme": {
+          "enum": [
+            "xyz",
+            "tms"
+          ]
+        },
+        "tileTemplate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "crs",
+        "axes",
+        "transform",
+        "bounds",
+        "tileSize",
+        "minZoom",
+        "maxZoom",
+        "tileScheme",
+        "tileTemplate",
+        "evidence"
+      ]
+    },
+    "Category": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "iconAssetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "iconReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "iconName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "groupId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "group",
+        "iconAssetId",
+        "iconReason",
+        "iconName",
+        "groupId"
+      ]
+    },
+    "Waypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "categoryId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "mapId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "descriptionFormat": {
+          "enum": [
+            "text",
+            "markdown",
+            "html"
+          ]
+        },
+        "coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^https://[^\\s]+$"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "assetId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "caption": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "attribution": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "assetId",
+              "order",
+              "caption",
+              "attribution"
+            ]
+          }
+        },
+        "imageDiscovery": {
+          "enum": [
+            "uninspected",
+            "none",
+            "present",
+            "failed"
+          ]
+        },
+        "discoveryError": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "categoryId",
+        "mapId",
+        "title",
+        "description",
+        "descriptionFormat",
+        "coordinates",
+        "sourceUrl",
+        "images",
+        "imageDiscovery",
+        "discoveryError"
+      ]
+    },
+    "Asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "kind": {
+          "enum": [
+            "category-icon",
+            "waypoint-image"
+          ]
+        },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^https?://[^\\s]+$"
+        },
+        "sprite": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "name",
+            "x",
+            "y",
+            "width",
+            "height"
+          ]
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(icons|images)/[a-f0-9]{64}\\.(png|jpg|webp)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mime": {
+          "anyOf": [
+            {
+              "enum": [
+                "image/png",
+                "image/jpeg",
+                "image/webp"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "width": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "downloaded",
+            "failed"
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "sourceUrl",
+        "path",
+        "mime",
+        "bytes",
+        "width",
+        "height",
+        "sha256",
+        "status",
+        "error"
+      ]
+    },
+    "Tile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mapId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "z": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^https://[^\\s]+$"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^tiles/[0-9]+/[0-9]+/[0-9]+\\.(jpg|png|webp)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "downloaded",
+            "failed"
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "mapId",
+        "z",
+        "x",
+        "y",
+        "sourceUrl",
+        "path",
+        "sha256",
+        "status",
+        "error"
+      ]
+    }
+  }
+}
