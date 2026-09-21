@@ -1,6 +1,9 @@
 */node_modules
 .DS_Store
 **/.env
+**/.env.docker
+**/.env.docker.*
+!.env.docker.example
 dist/
 build/
 .vscode/
