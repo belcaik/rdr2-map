@@ -1,3 +1,6 @@
+import type { Asset, Waypoint } from '../../../shared/contract';
+export type { Asset } from '../../../shared/contract';
+
 export interface Category {
   id: number;
   title: string;
@@ -5,6 +8,8 @@ export interface Category {
   group_id: number;
   visible: boolean;
   marker_count: number;
+  icon_asset: Asset | null;
+  icon_reason: string | null;
 }
 
 export interface Marker {
@@ -16,6 +21,16 @@ export interface Marker {
   description: string | null;
   category_title: string;
   category_icon: string;
+  category_icon_asset: Asset | null;
+  icon_reason: string | null;
+  image_discovery: Waypoint['imageDiscovery'];
+  description_format: Waypoint['descriptionFormat'];
+  discovery_error: string | null;
+  source_url: string;
+}
+
+export interface MarkerDetail extends Marker {
+  images: (Asset & { order: number; caption: string | null; attribution: string | null })[];
 }
 
 export interface UserProgress {

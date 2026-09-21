@@ -1,6 +1,14 @@
-import type { Category, Marker, UserProgress, ProgressStats, TileInfo } from '../types';
+import type { Category, Marker, MarkerDetail, UserProgress, ProgressStats, TileInfo } from '../types';
 
-const API_BASE = 'http://localhost:3001/api';
+export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:3001/api';
+
+export const assetUrl = (id: string) => `${API_BASE}/assets/${encodeURIComponent(id)}`;
+
+export async function fetchMarker(id: number, signal?: AbortSignal): Promise<MarkerDetail> {
+  const response = await fetch(`${API_BASE}/markers/${id}`, { signal });
+  if (!response.ok) throw new Error('Could not load waypoint details');
+  return response.json();
+}
 
 export async function fetchCategories(): Promise<Category[]> {
   const response = await fetch(`${API_BASE}/markers/categories`);
