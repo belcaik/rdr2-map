@@ -24,6 +24,7 @@ COPY backend/package.json backend/package-lock.json ./
 COPY --from=build /app/backend/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./dist
 COPY --from=build /app/frontend/dist /app/frontend/dist
+RUN mkdir -p /data && chown node:node /data
 USER node
 EXPOSE 3001
 CMD ["node", "dist/backend/src/index.js"]
