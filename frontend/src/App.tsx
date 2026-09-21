@@ -1,10 +1,13 @@
 import { useState, useCallback } from "react";
-import Map from "./components/Map";
-import CategoryMenu from "./components/CategoryMenu";
-import Controls from "./components/Controls";
+import Map from "./map/Map";
+import CategoryMenu from "./categories/CategoryMenu";
+import Controls from "./progress/Controls";
+import Detail from "./detail/Detail";
+import WaypointSearch from "./map/WaypointSearch";
 import { useMarkers } from "./hooks/useMarkers";
 import { useCategories } from "./hooks/useCategories";
 import { useProgress } from "./hooks/useProgress";
+import { useDebounce } from "./hooks/useDebounce";
 import type { Marker } from "./types";
 import "./App.css";
 
@@ -18,6 +21,7 @@ function App() {
     categories,
     visibleCategories,
     loading: categoriesLoading,
+    error: categoriesError,
     toggleCategory,
     showAllCategories,
     hideAllCategories,
@@ -27,14 +31,17 @@ function App() {
     foundCount,
     hideFound,
     loading: progressLoading,
+    error: progressError,
     toggleFound,
     toggleHideFound,
   } = useProgress();
 
+  const debouncedVisibleCategories = useDebounce(visibleCategories, 150);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selected, setSelected] = useState<Marker | null>(null);
 
-  const handleMarkerClick = useCallback((_marker: Marker) => {
-    // Marker click handling - popup is shown by Leaflet
+  const handleMarkerClick = useCallback((marker: Marker) => {
+    setSelected(marker);
   }, []);
 
   const handleToggleFound = useCallback(
@@ -45,7 +52,7 @@ function App() {
   );
 
   const isLoading = markersLoading || categoriesLoading || progressLoading;
-  const error = markersError;
+  const error = markersError || categoriesError || progressError;
 
   if (isLoading) {
     return (
@@ -61,7 +68,7 @@ function App() {
       <div className="error">
         <h2>Error loading map</h2>
         <p>{error}</p>
-        <p>Make sure the backend server is running on port 3001</p>
+        <p>Check that the local API is running, then reload.</p>
       </div>
     );
   }
@@ -70,12 +77,13 @@ function App() {
     <div className="app">
       <Map
         markers={markers}
-        visibleCategories={visibleCategories}
+        visibleCategories={debouncedVisibleCategories}
         foundMarkers={foundMarkers}
         hideFound={hideFound}
         onMarkerClick={handleMarkerClick}
-        onToggleFound={handleToggleFound}
+        selected={selected}
       />
+      <WaypointSearch markers={markers} visibleCategories={visibleCategories} foundMarkers={foundMarkers} hideFound={hideFound} onSelect={handleMarkerClick} />
       <Controls
         hideFound={hideFound}
         onToggleHideFound={toggleHideFound}
@@ -94,6 +102,7 @@ function App() {
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
       />
+      {selected && <Detail key={selected.id} id={selected.id} found={foundMarkers.has(selected.id)} onToggle={() => handleToggleFound(selected.id)} onClose={() => setSelected(null)} />}
     </div>
   );
 }

@@ -106,3 +106,64 @@ body,
     background: transparent;
     border: none;
 }
+
+button, input { font: inherit; }
+button { min-height: 44px; padding: 8px 12px; border: 1px solid #746450; border-radius: 4px; background: #30271f; color: #fff3d6; cursor: pointer; }
+button:hover { background: #493a2b; }
+button:disabled { opacity: .6; cursor: default; }
+a { color: #f0c68b; overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid #fff0bd; outline-offset: 3px; }
+.waypoint-canvas { position: absolute; pointer-events: none; }
+.map-controls { position: absolute; z-index: 900; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; }
+.progress-count { padding: 8px 12px; border: 1px solid #746450; background: #251c16; color: #f4e5cf; text-align: center; }
+.progress-count strong { color: #a4e2b2; }
+.waypoint-search { position: absolute; z-index: 950; top: 12px; left: 56px; width: min(270px, calc(100vw - 210px)); color: #fff3d6; }
+.waypoint-search label { display: block; padding: 4px 8px; font-family: Georgia, serif; font-size: 19px; background: #251c16; }
+.waypoint-search input { width: 100%; min-height: 44px; padding: 8px; background: #211b17; border: 1px solid #a98b68; color: #fff3d6; }
+.waypoint-search input::placeholder { color: #d0c0ab; }
+.search-results { max-height: 48vh; overflow-y: auto; padding: 4px; background: #251c16; border: 1px solid #a98b68; }
+.search-results button { width: 100%; text-align: left; margin-bottom: 4px; }
+.search-results small { display: block; color: #d0c0ab; font-size: 12px; }
+.search-results .search-close { text-align: right; }
+.category-menu { position: absolute; z-index: 1200; inset: 0 auto 0 0; width: min(340px, 100%); padding: 16px; overflow-y: auto; color: #fff3d6; background: #251c16; border-right: 1px solid #a98b68; }
+.category-menu header, .category-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.category-menu h2 { font-family: Georgia, serif; font-size: 22px; }
+.category-row { display: flex; align-items: center; gap: 8px; min-height: 52px; border-bottom: 1px solid #574a3d; cursor: pointer; }
+.category-row input { width: 20px; height: 20px; accent-color: #a8753e; }
+.category-row > span:not(.category-symbol) { flex: 1; font-size: 14px; }
+.category-row small { color: #d0c0ab; }
+.category-symbol { display: inline-block; flex: 0 0 30px; width: 30px; height: 36px; object-fit: contain; }
+.symbol-fallback { text-align: center; line-height: 32px; border: 1px dashed #d0c0ab; color: #f4e5cf; }
+.waypoint-detail { position: absolute; z-index: 1000; right: 12px; bottom: 12px; width: min(390px, calc(100vw - 24px)); max-height: calc(100% - 185px); overflow-y: auto; overscroll-behavior: contain; padding: 18px; color: #f4e5cf; background: #251c16; border: 1px solid #a98b68; box-shadow: 0 5px 24px #0008; }
+.detail-close { float: right; margin: 0 0 8px 8px; }
+.detail-category { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.waypoint-detail h2 { clear: both; margin: 12px 0; font-family: Georgia, serif; font-size: 26px; line-height: 1.2; overflow-wrap: anywhere; }
+.found-button { width: 100%; margin-bottom: 14px; background: #694524; }
+.found-button.is-found { border-color: #9cdcac; background: #294833; }
+.description { font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
+.description p, .description ul, .description ol { margin: 10px 0; }
+.description ul, .description ol { padding-left: 22px; }
+.description pre { white-space: pre-wrap; }
+.media-status { padding: 14px 0; color: #d0c0ab; }
+.source-link { display: inline-block; margin-top: 14px; min-height: 44px; padding-top: 8px; }
+.gallery { margin-top: 14px; }
+.gallery figure { margin: 0; }
+.gallery figure > img { display: block; width: 100%; max-height: 260px; object-fit: contain; background: #17120e; }
+.gallery figcaption { padding: 6px 0; font-size: 13px; overflow-wrap: anywhere; }
+.gallery figcaption small { display: block; color: #d0c0ab; }
+.gallery-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0; }
+.gallery > button { width: 100%; }
+.gallery-dialog { position: fixed; margin: auto; width: min(1100px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; background: #251c16; color: #f4e5cf; border: 1px solid #a98b68; padding: 16px; }
+.gallery-dialog::backdrop { background: #000d; }
+.gallery-dialog figure > img { max-height: calc(100dvh - 220px); }
+.gallery-close { display: block; margin: 0 0 12px auto; }
+@media (max-width: 600px) {
+  .waypoint-search { left: 52px; top: 10px; width: calc(100vw - 190px); }
+  .waypoint-search label { font-size: 17px; }
+  .waypoint-search input { font-size: 13px; }
+  .map-controls { right: 8px; top: 10px; max-width: 122px; font-size: 13px; }
+  .map-controls button { padding: 8px; }
+  .waypoint-detail { right: 8px; bottom: 8px; width: calc(100vw - 16px); max-height: 65%; padding: 14px; }
+  .waypoint-detail h2 { font-size: 23px; }
+}
+@media (prefers-reduced-motion: reduce) { .loading-spinner { animation: none; } }

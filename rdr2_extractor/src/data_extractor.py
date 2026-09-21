@@ -268,7 +268,7 @@ class DataExtractor:
             
             # Extract additional fields
             marker['description'] = location.get('description', location.get('desc'))
-            marker['image_url'] = location.get('image', location.get('icon', location.get('img')))
+            marker['image_url'] = location.get('image', location.get('img'))
             
             return marker
             
@@ -293,7 +293,7 @@ class DataExtractor:
                 'category': data.get('category', data.get('type', data.get('class', 'unknown'))),
                 'coordinates': coords,
                 'description': data.get('description', data.get('desc')),
-                'image_url': data.get('image', data.get('icon', data.get('img'))),
+                'image_url': data.get('image', data.get('img')),
                 'metadata': data
             }
             

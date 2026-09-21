@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "gameId": "rdr2",
+  "source": {
+    "url": "https://rdr2map.com/",
+    "kind": "synthetic",
+    "evidence": "Generated geometry; not source discovery evidence"
+  },
+  "extractedAt": "2026-01-01T00:00:00Z",
+  "runId": "synthetic-demo-v1",
+  "maps": [
+    {
+      "id": "1",
+      "name": "RDR2",
+      "crs": "EPSG3857",
+      "axes": "x=latitude,y=longitude",
+      "transform": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "bounds": [
+        [
+          -70,
+          -180
+        ],
+        [
+          85,
+          180
+        ]
+      ],
+      "tileSize": 256,
+      "minZoom": 2,
+      "maxZoom": 6,
+      "tileScheme": "xyz",
+      "tileTemplate": "/api/tiles/{z}/{x}/{y}.jpg",
+      "evidence": "Preserved existing local map configuration; source projection independently observed"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Card",
+      "group": "Synthetic places",
+      "groupId": 1,
+      "iconName": "card",
+      "iconAssetId": "icon-card",
+      "iconReason": null
+    },
+    {
+      "id": 2,
+      "name": "Bone",
+      "group": "Synthetic places",
+      "groupId": 1,
+      "iconName": "bone",
+      "iconAssetId": "icon-bone",
+      "iconReason": null
+    },
+    {
+      "id": 3,
+      "name": "Shop",
+      "group": "Synthetic places",
+      "groupId": 1,
+      "iconName": "shop",
+      "iconAssetId": "icon-shop",
+      "iconReason": null
+    }
+  ],
+  "waypoints": [
+    {
+      "id": 1001,
+      "mapId": "1",
+      "categoryId": 1,
+      "title": "Two photographs",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 30,
+        "y": 45
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1001",
+      "images": [
+        {
+          "assetId": "photo-one",
+          "order": 0,
+          "caption": "First view",
+          "attribution": "Synthetic test fixture"
+        },
+        {
+          "assetId": "photo-two",
+          "order": 1,
+          "caption": "Second view",
+          "attribution": "Synthetic test fixture"
+        }
+      ],
+      "imageDiscovery": "present",
+      "discoveryError": null
+    },
+    {
+      "id": 1002,
+      "mapId": "1",
+      "categoryId": 2,
+      "title": "One photograph",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 33,
+        "y": 45
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1002",
+      "images": [
+        {
+          "assetId": "photo-one",
+          "order": 0,
+          "caption": "Shared file, separate caption",
+          "attribution": "Synthetic test fixture"
+        }
+      ],
+      "imageDiscovery": "present",
+      "discoveryError": null
+    },
+    {
+      "id": 1003,
+      "mapId": "1",
+      "categoryId": 3,
+      "title": "No photographs",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 36,
+        "y": 45
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1003",
+      "images": [],
+      "imageDiscovery": "none",
+      "discoveryError": null
+    },
+    {
+      "id": 1004,
+      "mapId": "1",
+      "categoryId": 1,
+      "title": "Not inspected",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 30,
+        "y": 48
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1004",
+      "images": [],
+      "imageDiscovery": "uninspected",
+      "discoveryError": null
+    },
+    {
+      "id": 1005,
+      "mapId": "1",
+      "categoryId": 2,
+      "title": "Discovery failed",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 33,
+        "y": 48
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1005",
+      "images": [],
+      "imageDiscovery": "failed",
+      "discoveryError": "Detail request timed out"
+    },
+    {
+      "id": 1006,
+      "mapId": "1",
+      "categoryId": 3,
+      "title": "Download pending",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 36,
+        "y": 48
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1006",
+      "images": [
+        {
+          "assetId": "photo-pending",
+          "order": 0,
+          "caption": null,
+          "attribution": "Synthetic test fixture"
+        }
+      ],
+      "imageDiscovery": "present",
+      "discoveryError": null
+    },
+    {
+      "id": 1007,
+      "mapId": "1",
+      "categoryId": 1,
+      "title": "Download failed",
+      "description": "**Reference notes** with a [source link](https://rdr2map.com/). ![remote](https://invalid.example/hidden.jpg)",
+      "descriptionFormat": "markdown",
+      "coordinates": {
+        "x": 30,
+        "y": 51
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1007",
+      "images": [
+        {
+          "assetId": "photo-failed",
+          "order": 0,
+          "caption": null,
+          "attribution": "Synthetic test fixture"
+        }
+      ],
+      "imageDiscovery": "present",
+      "discoveryError": null
+    },
+    {
+      "id": 1008,
+      "mapId": "1",
+      "categoryId": 2,
+      "title": "HTML description",
+      "description": "<strong>Safe formatting</strong><script>window.injected=true</script><img src=\"https://invalid.example/hidden.jpg\" onerror=\"window.injected=true\"><a href=\"javascript:alert(1)\">Unsafe link</a>",
+      "descriptionFormat": "html",
+      "coordinates": {
+        "x": 33,
+        "y": 51
+      },
+      "sourceUrl": "https://rdr2map.com/?locationIds=1008",
+      "images": [],
+      "imageDiscovery": "none",
+      "discoveryError": null
+    }
+  ],
+  "assets": [
+    {
+      "id": "icon-card",
+      "kind": "category-icon",
+      "sourceUrl": "https://rdr2map.com/synthetic/icon-card",
+      "path": "icons/9199f6fef9e803d89bf3a1b1e0ded94533c30130eb213b6ee07ea9ce708ab1c5.png",
+      "mime": "image/png",
+      "bytes": 470,
+      "width": 96,
+      "height": 96,
+      "sha256": "9199f6fef9e803d89bf3a1b1e0ded94533c30130eb213b6ee07ea9ce708ab1c5",
+      "status": "downloaded",
+      "error": null
+    },
+    {
+      "id": "icon-bone",
+      "kind": "category-icon",
+      "sourceUrl": "https://rdr2map.com/synthetic/icon-bone",
+      "path": "icons/421866ae2431b01f7f4f1f8370249896507a4e6fd42923d4c71265525a0bba66.png",
+      "mime": "image/png",
+      "bytes": 676,
+      "width": 96,
+      "height": 96,
+      "sha256": "421866ae2431b01f7f4f1f8370249896507a4e6fd42923d4c71265525a0bba66",
+      "status": "downloaded",
+      "error": null
+    },
+    {
+      "id": "icon-shop",
+      "kind": "category-icon",
+      "sourceUrl": "https://rdr2map.com/synthetic/icon-shop",
+      "path": "icons/340b14c76154703d7d0b8edcb3cc91a023b42ba67d73e7d3d989a9df8c545483.png",
+      "mime": "image/png",
+      "bytes": 1254,
+      "width": 96,
+      "height": 96,
+      "sha256": "340b14c76154703d7d0b8edcb3cc91a023b42ba67d73e7d3d989a9df8c545483",
+      "status": "downloaded",
+      "error": null
+    },
+    {
+      "id": "photo-one",
+      "kind": "waypoint-image",
+      "sourceUrl": "https://rdr2map.com/synthetic/photo-one",
+      "path": "images/08a97213a9de6750991dcdf1ed774b9241b4a4733bd2d6a5b5dcb76c3e614c29.jpg",
+      "mime": "image/jpeg",
+      "bytes": 1254,
+      "width": 96,
+      "height": 96,
+      "sha256": "08a97213a9de6750991dcdf1ed774b9241b4a4733bd2d6a5b5dcb76c3e614c29",
+      "status": "downloaded",
+      "error": null
+    },
+    {
+      "id": "photo-two",
+      "kind": "waypoint-image",
+      "sourceUrl": "https://rdr2map.com/synthetic/photo-two",
+      "path": "images/0a3ae5fa00f29331627fbd0c0ecb09398e44bf76770053eb04317bd553b4817b.webp",
+      "mime": "image/webp",
+      "bytes": 422,
+      "width": 96,
+      "height": 96,
+      "sha256": "0a3ae5fa00f29331627fbd0c0ecb09398e44bf76770053eb04317bd553b4817b",
+      "status": "downloaded",
+      "error": null
+    },
+    {
+      "id": "photo-pending",
+      "kind": "waypoint-image",
+      "sourceUrl": "https://rdr2map.com/synthetic/photo-pending",
+      "path": null,
+      "mime": null,
+      "bytes": null,
+      "width": null,
+      "height": null,
+      "sha256": null,
+      "status": "pending",
+      "error": null
+    },
+    {
+      "id": "photo-failed",
+      "kind": "waypoint-image",
+      "sourceUrl": "https://rdr2map.com/synthetic/photo-failed",
+      "path": null,
+      "mime": null,
+      "bytes": null,
+      "width": null,
+      "height": null,
+      "sha256": null,
+      "status": "failed",
+      "error": "Source returned HTTP 404"
+    }
+  ],
+  "tiles": [],
+  "coverage": {
+    "complete": false,
+    "scopeMapIds": [
+      "1"
+    ],
+    "discovered": 8,
+    "filters": [
+      "synthetic sample"
+    ],
+    "omissions": [],
+    "mediaComplete": false,
+    "tilesComplete": false
+  }
+}

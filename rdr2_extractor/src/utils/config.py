@@ -31,7 +31,7 @@ class Config:
             },
             'browser': {
                 'headless': True,
-                'stealth_mode': True,
+                'stealth_mode': False,
                 'interactions': [
                     'zoom_in', 'zoom_out', 'pan_left', 'pan_right', 'pan_up', 'pan_down'
                 ],

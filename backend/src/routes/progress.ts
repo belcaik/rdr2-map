@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { getDb } from '../db';
+import type Database from 'better-sqlite3';
 import type { UserProgress, ProgressStats } from '../types';
 
+export function progressRouter(db: Database.Database) {
 const router = Router();
 
 // GET /api/progress - Get all progress entries
 router.get('/', (_req, res) => {
-  const db = getDb();
+
 
   const progress = db.prepare(`
     SELECT marker_id, found, found_at
@@ -19,7 +20,7 @@ router.get('/', (_req, res) => {
 
 // GET /api/progress/stats - Get progress statistics
 router.get('/stats', (_req, res) => {
-  const db = getDb();
+
 
   // Total markers
   const totalResult = db.prepare('SELECT COUNT(*) as count FROM markers').get() as { count: number };
@@ -50,11 +51,24 @@ router.get('/stats', (_req, res) => {
   res.json(stats);
 });
 
+// POST /api/progress/reset - Reset all progress
+router.post('/reset', (_req, res) => {
+
+
+  db.prepare('DELETE FROM user_progress').run();
+
+  res.json({ success: true, message: 'All progress has been reset' });
+});
+
 // POST /api/progress/:markerId - Toggle marker found status
 router.post('/:markerId', (req, res) => {
-  const db = getDb();
-  const markerId = parseInt(req.params.markerId, 10);
+
+  const markerId = Number(req.params.markerId);
+  if (!Number.isSafeInteger(markerId) || markerId < 1) { res.status(400).json({error:'Invalid marker ID'}); return; }
   const { found } = req.body as { found?: boolean };
+
+  if (found !== undefined && typeof found !== 'boolean') { res.status(400).json({error:'found must be boolean'}); return; }
+  const foundAt = new Date().toISOString();
 
   // Check if marker exists
   const marker = db.prepare('SELECT id FROM markers WHERE id = ?').get(markerId);
@@ -75,34 +89,25 @@ router.post('/:markerId', (req, res) => {
       UPDATE user_progress
       SET found = ?, found_at = ?
       WHERE marker_id = ?
-    `).run(newFound ? 1 : 0, newFound ? new Date().toISOString() : null, markerId);
+    `).run(newFound ? 1 : 0, newFound ? foundAt : null, markerId);
   } else {
     // Insert new
     db.prepare(`
       INSERT INTO user_progress (marker_id, found, found_at)
       VALUES (?, ?, ?)
-    `).run(markerId, newFound ? 1 : 0, newFound ? new Date().toISOString() : null);
+    `).run(markerId, newFound ? 1 : 0, newFound ? foundAt : null);
   }
 
   res.json({
     marker_id: markerId,
     found: newFound,
-    found_at: newFound ? new Date().toISOString() : null
+    found_at: newFound ? foundAt : null
   });
-});
-
-// POST /api/progress/reset - Reset all progress
-router.post('/reset', (_req, res) => {
-  const db = getDb();
-
-  db.prepare('DELETE FROM user_progress').run();
-
-  res.json({ success: true, message: 'All progress has been reset' });
 });
 
 // POST /api/progress/category/:categoryId/reset - Reset progress for a category
 router.post('/category/:categoryId/reset', (req, res) => {
-  const db = getDb();
+
   const categoryId = parseInt(req.params.categoryId, 10);
 
   const result = db.prepare(`
@@ -116,4 +121,5 @@ router.post('/category/:categoryId/reset', (req, res) => {
   });
 });
 
-export default router;
+return router;
+}
