@@ -47,10 +47,11 @@ app. Follow [migration](docs/migration.md) to test a SQLite backup copy first, t
 
 ```bash
 npm run migrate -- --db backend/data/rdr2.db
-npm run import -- data/sample/dataset.json --db backend/data/rdr2.db --data-root data
+npm run import -- data/all-public/dataset.json --db backend/data/rdr2.db --data-root data
 DB_PATH="$PWD/backend/data/rdr2.db" DATA_ROOT="$PWD/data" npm run dev:api
 ```
 
+Create `data/all-public/dataset.json` using the full extraction below before importing.
 Migration creates a consistent backup and verifies all legacy values. Import requires
 an explicit dataset path; it never resets progress or removes absent points/categories.
 A later partial capture does not erase previously downloaded media. Progress reset
@@ -72,6 +73,26 @@ an ignored source capture. Resume keeps the original selection and verifies exis
 files. To use all public points, choose a new output and `--sample 0`. Coverage stays
 partial when the source omits premium categories. `--phase normalize` exports without
 media downloads; `--phase discover` captures without normalization/downloads.
+
+For all public points and their photographs, extract and import the **same output**:
+
+```bash
+./rdr2_extractor/run.sh --output data/all-public --sample 0
+./rdr2_extractor/run.sh --output data/all-public --phase validate
+npm run import -- data/all-public/dataset.json --db backend/data/rdr2.db --data-root data
+```
+
+The default is `--sample 6`, regardless of the output directory name. A report with
+`waypoints: 6` and `mediaComplete: true` means media is complete for those six points
+only. Importing it leaves other existing points unchanged, so they can still show
+“Photographs have not been inspected yet.” This means discovery is unknown, not that
+a photograph download failed. `none` means the inspected source has no photographs.
+
+If `data/all-public` already contains a six-point sample, rerun the first command
+without `--resume` to normalize the full capture. To continue an interrupted **full**
+download, use `./rdr2_extractor/run.sh --output data/all-public --resume`.
+Resume preserves the saved selection even when combined with `--sample 0`.
+After importing, reload the map to fetch the updated detail data.
 
 Reuse an allowed offline capture, without recapturing the site:
 

@@ -23,6 +23,11 @@ supply a legitimate capture with `--capture path/to/capture.json`.
 and allowlisted network evidence. `--phase normalize` exports without downloads;
 `--phase download` runs the full pipeline; `--phase validate` verifies dataset and
 local file hashes/MIME/dimensions. `--sample 0` selects every captured public point.
+The default is `--sample 6`; naming the output `all-public` does not change it.
+For full enrichment, run `./rdr2_extractor/run.sh --output data/all-public --sample 0`
+from the repository root, then import `data/all-public/dataset.json` (not the sample).
+To expand an existing sample, omit `--resume`: resume keeps the saved selection,
+even with `--sample 0`. `mediaComplete` refers only to the selected points.
 `--categories 36 29 33` limits category IDs. Resume reuses the original selection,
 validates cached files, skips valid files and retries failed/corrupt downloads.
 
