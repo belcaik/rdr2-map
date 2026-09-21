@@ -1,7 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import sharp from '../backend/node_modules/sharp/lib/index.js';
+import { createRequire } from 'node:module';
+const require = createRequire(new URL('../backend/package.json', import.meta.url));
+const sharp = require('sharp');
 
 // Synthetic geometry only; no source media or session data enters the repository.
 export async function createDemo(root) {
